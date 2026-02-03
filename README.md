@@ -1,8 +1,10 @@
 # Compare_Rates
 
-A simple tool for comparing rates (such as prices, interest rates, or service fees) to quickly determine the best option.
+A Robot Framework automation project that compares EUR/USD exchange rates from two sources:
+- **API**: Frankfurter API (https://api.frankfurter.app)
+- **UI**: National Bank of Slovakia (NBS) website
 
-> Note: This project is under active development. The functionality and documentation will evolve over time.
+The test validates that the rates from both sources are within an acceptable tolerance (0.5 USD).
 
 ---
 
@@ -14,8 +16,6 @@ A simple tool for comparing rates (such as prices, interest rates, or service fe
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [Usage](#usage)
-- [Configuration](#configuration)
-- [Examples](#examples)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
@@ -25,199 +25,160 @@ A simple tool for comparing rates (such as prices, interest rates, or service fe
 
 ## About the Project
 
-**Compare_Rates** is intended to help you evaluate and compare different rate-based options. Typical use cases include:
+**Compare_Rates** is a Robot Framework test automation project that validates currency exchange rates by comparing data from two different sources:
 
-- Comparing prices from multiple vendors
-- Evaluating interest rates from different financial institutions
-- Comparing recurring subscription fees
-- Any scenario where you have multiple options with rates and want to choose the best one
+1. **API Source**: Fetches the latest EUR to USD exchange rate from the Frankfurter API
+2. **Web UI Source**: Scrapes the US Dollar exchange rate from the National Bank of Slovakia website
 
-The goal is to provide a simple, scriptable workflow so you can automate comparisons instead of doing them manually in a spreadsheet.
-
-> If your project has a specific focus (e.g., loan rate comparison, FX rates, utility rates), you can update this section to describe it precisely.
+The test ensures that both sources provide consistent rates within an acceptable tolerance of 0.5 USD, helping to verify data accuracy across different platforms.
 
 ---
 
 ## Features
 
-Planned or existing features may include:
-
-- Input data from CSV, JSON, or manual entry
-- Normalize rates (e.g., convert monthly to annual, per-unit to per-100-units, etc.)
-- Sort and filter options by best rate
-- Basic summary statistics (min, max, average)
-- Simple command-line interface (CLI)
-- Easy to extend with custom comparison logic
-
-Update this list to match the actual implemented functionality in the repo.
+- ✅ Automated exchange rate retrieval from REST API
+- ✅ Web scraping of exchange rates from NBS website
+- ✅ Browser automation with Playwright (via Robot Framework Browser library)
+- ✅ Cookie consent handling
+- ✅ Rate comparison with configurable tolerance
+- ✅ Comprehensive logging of both API and UI rates
 
 ---
 
 ## Getting Started
 
-These instructions describe how to get a copy of the project running on your local machine for development and testing.
+These instructions will help you set up and run the project on your local machine.
 
 ### Prerequisites
 
-Depending on your tech stack, you might need things like:
-
+- [Python](https://www.python.org/) 3.9 or higher
 - [Git](https://git-scm.com/)
-- [Python](https://www.python.org/) 3.9+  
-  or
-- [Node.js](https://nodejs.org/) 18+  
-  or
-- Any other runtime or tool you use
+- pip (Python package manager)
 
-Replace the items below with what your project actually requires.
+Verify your Python installation:
 
 ```bash
-# Example for Python projects
 python --version
 pip --version
 ```
 
 ### Installation
 
-Clone the repository and install dependencies.
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/tomkacaliak/Comapre_Rates.git
 cd Comapre_Rates
 ```
 
-If this is a Python project:
+2. Create and activate a virtual environment (recommended):
 
 ```bash
-# (Optional) create and activate a virtual environment
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
 
-# Install dependencies (if you have a requirements file)
+3. Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
-If this is a Node.js project:
+4. Initialize Robot Framework Browser library:
 
 ```bash
-npm install
-# or
-yarn install
+rfbrowser init
 ```
 
-Adapt this section to match your actual environment.
+This command downloads the necessary Playwright browsers (Chromium, Firefox, WebKit).
 
 ---
 
 ## Usage
 
-Describe how to run the project and perform a comparison.
-
-### Basic Usage
+Run the test suite:
 
 ```bash
-# Example (Python)
-python compare_rates.py input_data.csv
-
-# Example (Node.js)
-node compareRates.js input_data.json
+robot main.robot
 ```
 
-Explain:
+### Running Options
 
-- Required arguments (e.g., path to data file)
-- Optional flags (e.g., `--sort asc`, `--currency EUR`, `--normalize annual`)
-- Where results are printed or saved (console, file, etc.)
-
-### Command-Line Options (Example)
-
-You can adapt to your actual CLI:
-
+Run with visible browser (non-headless mode):
 ```bash
-python compare_rates.py --help
+robot main.robot
 ```
 
-Example options:
+Run with custom log level:
+```bash
+robot --loglevel DEBUG main.robot
+```
 
-- `--input` – Path to input file
-- `--output` – Path to save comparison results
-- `--sort` – Sort order (`asc` or `desc`)
-- `--field` – Field to compare (e.g., `rate`, `fee`, `apr`)
-- `--normalize` – Normalization rule (e.g., `monthly-to-annual`)
+View test reports after execution:
+- `report.html` - High-level test execution report
+- `log.html` - Detailed execution log
+- `output.xml` - Machine-readable output
 
 ---
 
-## Configuration
+## How It Works
 
-If your project supports configuration (via environment variables or a config file), document it here.
+1. **API Rate Retrieval**: 
+   - Makes a GET request to `https://api.frankfurter.app/latest?from=EUR&to=USD`
+   - Extracts the USD exchange rate from the JSON response
 
-Example using environment variables:
-
-```bash
-export CR_DEFAULT_FIELD=rate
-export CR_OUTPUT_FORMAT=table
-```
-
-Example config file `config.yaml`:
-
-```yaml
-default_field: rate
-output_format: table
-currency: EUR
-```
-
-Update this section according to how your project is actually configured.
-
----
-
-## Examples
-
-Provide example inputs and outputs to show how comparisons work.
-
-### Example Input (CSV)
-
-```csv
-provider,rate,period
-Bank A,1.2,monthly
-Bank B,1.1,monthly
-Bank C,1.4,monthly
-```
-
-### Example Command
-
-```bash
-python compare_rates.py rates.csv --field rate --sort asc
-```
-
-### Example Output
-
-```text
-Best rate options (ascending):
-
-1) Bank B  - 1.1 % monthly
-2) Bank A  - 1.2 % monthly
-3) Bank C  - 1.4 % monthly
-```
-
-Replace this section with real examples from your project.
+2. **UI Rate Retrieval**:
+   - Opens the NBS website in Chromium browser
+   - Handles cookie consent popup if present
+   - Locates and extracts the US Dollar exchange rate from the table
+   
+3. **Comparison**:
+   - Compares both rates
+   - Validates that the difference is less than 0.5 USD
+   - Fails the test if rates differ by more than the tolerance
 
 ---
 
 ## Project Structure
 
-Document the important files and directories. Example:
-
 ```text
 Comapre_Rates/
-├─ data/                # Sample input data files
-├─ src/                 # Source code
-│  ├─ compare_rates.py  # Main comparison logic
-│  └─ ...
-├─ tests/               # Unit tests
-├─ README.md            # Project documentation
-└─ requirements.txt     # Python dependencies (if applicable)
+├─ main.robot           # Main test suite with rate comparison logic
+├─ requirements.txt     # Python dependencies
+└─ README.md            # Project documentation
 ```
 
-Adjust this tree to reflect your actual repository layout.
+### Key Components
+
+- **Libraries Used**:
+  - `Browser` - Playwright-based browser automation
+  - `RequestsLibrary` - HTTP/REST API requests
+  - `OperatingSystem`, `String`, `Collections` - Built-in Robot Framework libraries
+
+- **Test Keywords**:
+  - `Get Rate From API` - Fetches rate from Frankfurter API
+  - `Get Rate from UI` - Scrapes rate from NBS website
+  - `Compare Values With Tolerance` - Validates rate consistency
+
+---
+
+## Configuration
+
+### Modifying Tolerance
+
+To change the acceptable rate difference, edit the tolerance value in [main.robot](main.robot):
+
+```robotframework
+Should Be True    ${diff} < 0.5    # Change 0.5 to your desired tolerance
+```
+
+### Browser Settings
+
+To run in headless mode, modify the browser initialization in [main.robot](main.robot):
+
+```robotframework
+New Browser    chromium    headless=True
+```
 
 ---
 
@@ -233,19 +194,11 @@ Contributions are welcome! To contribute:
 6. Push the branch (`git push origin feature/my-feature`)
 7. Open a Pull Request
 
-Please keep code style consistent with the existing project and provide clear descriptions in PRs.
-
 ---
 
 ## License
 
-Specify the license for your project here.
-
-For example:
-
 This project is licensed under the [MIT License](LICENSE).
-
-If you haven’t chosen a license yet, consider using [Choose a License](https://choosealicense.com/) and then update this section.
 
 ---
 
@@ -255,7 +208,14 @@ If you haven’t chosen a license yet, consider using [Choose a License](https:/
 
 If you have questions, suggestions, or found a bug, feel free to:
 
-- Open an issue in the repository: [Issues](https://github.com/tomkacaliak/Comapre_Rates/issues)
-- Or submit a pull request with improvements
+- Open an issue: [Issues](https://github.com/tomkacaliak/Comapre_Rates/issues)
+- Submit a pull request with improvements
 
 ---
+
+## Acknowledgments
+
+- [Frankfurter API](https://www.frankfurter.app/) - Free currency exchange rate API
+- [National Bank of Slovakia](https://nbs.sk/) - Exchange rate data source
+- [Robot Framework](https://robotframework.org/) - Test automation framework
+- [Robot Framework Browser Library](https://robotframework-browser.org/) - Modern browser automation
